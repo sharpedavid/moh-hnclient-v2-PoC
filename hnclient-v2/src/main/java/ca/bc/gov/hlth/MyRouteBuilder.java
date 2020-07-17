@@ -11,7 +11,7 @@ public class MyRouteBuilder extends RouteBuilder {
      */
     @Override
     public void configure() {
-        from("netty:tcp://localhost:8080/hnclient")
+        from("netty:tcp://localhost:8080")
                 .log("HNClient Received a request")
                 .log("Sending to hnsecure")
                 .to("http://localhost:9090/hl7v2") //Send it to the mock hnsecure
