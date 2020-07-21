@@ -1,5 +1,6 @@
 package ca.bc.gov.hlth;
 
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 
 public class MyRouteBuilder extends RouteBuilder {
@@ -10,10 +11,13 @@ public class MyRouteBuilder extends RouteBuilder {
             "PID||123456789^^^BC^PH^MOH|||||19840225|M^M\n" +
             "ZIA|||||||||||||||BRANTON^DARREN^S^^^^L|912 YATES ST^^^^^^^^^^^^^^^^^^^VICTORIA^BC^V8V3M2^CAN^H^^^^N|^PRN^PH^^^250^6611681";
 
+    Processor authProcessor = new AuthorizationProcessor();
+
     @Override
     public void configure() {
         from("jetty:http://{{hostname}}:{{port}}/{{endpoint}}")
             .log("HNSecure Received a request")
+            .process(authProcessor)
             .setBody(simple(responseMessage));
     }
 }

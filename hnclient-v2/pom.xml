@@ -58,6 +58,13 @@
       <version>${log4j2-version}</version>
     </dependency>
 
+    <!-- oAuth2 token -->
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>oauth2-oidc-sdk</artifactId>
+      <version>8.18</version>
+    </dependency>
+
     <!-- testing -->
     <dependency>
       <groupId>org.apache.camel</groupId>
