@@ -47,6 +47,13 @@
       <artifactId>camel-jetty</artifactId>
     </dependency>
 
+    <!-- validate OAuth access tokens -->
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>nimbus-jose-jwt</artifactId>
+      <version>8.18</version>
+    </dependency>
+
     <!-- logging -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
