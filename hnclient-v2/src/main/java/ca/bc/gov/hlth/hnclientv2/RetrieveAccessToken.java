@@ -49,7 +49,7 @@ public class RetrieveAccessToken implements Processor {
         // Get the access token
         AccessToken accessToken = successResponse.getTokens().getAccessToken();
 
-        logger.info(String.format("Access token is '%s'", accessToken.toJSONString()));
+        logger.info(String.format("Access token: %s", accessToken.toJSONString()));
 
         exchange.getIn().setHeader("Authorization", accessToken);
     }

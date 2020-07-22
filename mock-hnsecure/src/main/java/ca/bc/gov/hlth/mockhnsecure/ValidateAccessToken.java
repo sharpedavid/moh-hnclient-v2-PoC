@@ -5,7 +5,11 @@ import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
-import com.nimbusds.jose.proc.*;
+import com.nimbusds.jose.proc.BadJOSEException;
+import com.nimbusds.jose.proc.DefaultJOSEObjectTypeVerifier;
+import com.nimbusds.jose.proc.JWSKeySelector;
+import com.nimbusds.jose.proc.JWSVerificationKeySelector;
+import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
@@ -28,7 +32,7 @@ public class ValidateAccessToken implements Processor {
     public void process(Exchange exchange) throws MalformedURLException, ParseException, JOSEException, BadJOSEException {
 
         String accessToken = exchange.getIn().getHeader("Authorization").toString();
-        logger.info("ACCESS TOKEN: " + accessToken);
+        logger.info(String.format("Access token: %s", accessToken));
 
         // Create a JWT processor for the access tokens
         ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
@@ -47,7 +51,7 @@ public class ValidateAccessToken implements Processor {
         jwtProcessor.setJWSKeySelector(keySelector);
 
         // Set the required JWT claims - these must all be available in the token payload
-        //TODO - can this be used to validate the actual claim contents?
+        // TODO - can this be used to validate the actual claim contents?
         jwtProcessor.setJWTClaimsSetVerifier(new DefaultJWTClaimsVerifier(
                 new JWTClaimsSet.Builder().issuer("https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications").build(),
                 new HashSet<>(Arrays.asList("sub", "iat", "exp", "scope", "clientId", "jti"))));
