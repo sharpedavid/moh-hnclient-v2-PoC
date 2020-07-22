@@ -14,12 +14,12 @@ public class Route extends RouteBuilder {
      */
     @Override
     public void configure() {
-        from("netty:tcp://localhost:8080")
+        from("netty:tcp://{{hostname}}:{{port}}")
                 .log("HNClient Received a request")
                 .log("Retrieving Access Token")
                 .process(new OAuthProcessor())
                 .log("Sending to hnsecure")
-                .to("http://localhost:9090/hl7v2") //Send it to the mock hnsecure
+                .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}")
                 .log("Received response from hnsecure")
                 .convertBodyTo(String.class)
                 .log("response message: ${body}")
