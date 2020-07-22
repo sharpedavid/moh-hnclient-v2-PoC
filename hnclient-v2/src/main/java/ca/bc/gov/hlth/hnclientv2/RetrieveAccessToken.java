@@ -25,7 +25,7 @@ public class RetrieveAccessToken implements Processor {
 
         // The credentials to authenticate the client at the token endpoint
         ClientID clientID = new ClientID("moh-hnclient");
-        Secret clientSecret = new Secret("client-secret-goes-here");
+        Secret clientSecret = new Secret(System.getenv("MOH_HNCLIENT_SECRET"));
         ClientAuthentication clientAuth = new ClientSecretBasic(clientID, clientSecret);
 
         // The request scope for the token (may be optional)
