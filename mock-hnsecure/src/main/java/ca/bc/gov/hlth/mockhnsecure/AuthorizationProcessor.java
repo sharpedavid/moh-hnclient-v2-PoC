@@ -1,4 +1,4 @@
-package ca.bc.gov.hlth;
+package ca.bc.gov.hlth.mockhnsecure;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

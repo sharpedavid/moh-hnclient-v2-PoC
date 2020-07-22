@@ -1,18 +1,16 @@
-package ca.bc.gov.hlth;
-
-import org.apache.camel.main.Main;
+package ca.bc.gov.hlth.hnclientv2;
 
 /**
  * A Camel Application
  */
-public class HnClientMain {
+public class Main {
 
     /**
      * A main() so we can easily run these routing rules in our IDE
      */
     public static void main(String... args) throws Exception {
-        Main main = new Main();
-        main.configure().addRoutesBuilder(new MyRouteBuilder());
+        org.apache.camel.main.Main main = new org.apache.camel.main.Main();
+        main.configure().addRoutesBuilder(new MainRoute());
         main.run(args);
     }
 

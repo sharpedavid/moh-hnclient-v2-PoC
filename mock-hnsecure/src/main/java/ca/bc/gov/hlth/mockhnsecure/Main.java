@@ -1,20 +1,18 @@
-package ca.bc.gov.hlth;
-
-import org.apache.camel.main.Main;
+package ca.bc.gov.hlth.mockhnsecure;
 
 /**
  * Main class that boot the Camel application
  */
-public final class MockHnSecureMain {
+public final class Main {
 
-    private MockHnSecureMain() {
+    private Main() {
     }
 
     public static void main(String[] args) throws Exception {
         // use Camels Main class
-        Main main = new Main();
+        org.apache.camel.main.Main main = new org.apache.camel.main.Main();
         // and add the routes (you can specify multiple classes)
-        main.configure().addRoutesBuilder(MyRouteBuilder.class);
+        main.configure().addRoutesBuilder(MainRoute.class);
         // now keep the application running until the JVM is terminated (ctrl + c or sigterm)
         main.run(args);
     }
