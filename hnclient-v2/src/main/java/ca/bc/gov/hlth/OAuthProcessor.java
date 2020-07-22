@@ -9,10 +9,14 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
 public class OAuthProcessor implements Processor {
+
+    private static Logger logger = LoggerFactory.getLogger(OAuthProcessor.class);
 
     public void process(Exchange exchange) throws Exception {
 
@@ -34,11 +38,10 @@ public class OAuthProcessor implements Processor {
         TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, clientGrant, scope);
 
         TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
-        if (! response.indicatesSuccess()) {
-            // We got an error response...
+        if (!response.indicatesSuccess()) {
+            // TODO - handle this error
             TokenErrorResponse errorResponse = response.toErrorResponse();
-            //TODO - handle this error
-            System.out.println(errorResponse);
+            throw new IllegalStateException(errorResponse.toJSONObject().toString());
         }
 
         AccessTokenResponse successResponse = response.toSuccessResponse();
@@ -46,8 +49,7 @@ public class OAuthProcessor implements Processor {
         // Get the access token
         AccessToken accessToken = successResponse.getTokens().getAccessToken();
 
-        System.out.println(accessToken.toJSONString());
-        System.out.println(accessToken.getScope());
+        logger.info(String.format("Access token is '%s'", accessToken.toJSONString()));
 
         exchange.getIn().setHeader("Authorization", accessToken);
     }

@@ -2,10 +2,14 @@ package ca.bc.gov.hlth;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AuthorizationProcessor implements Processor {
 
+    private static Logger logger = LoggerFactory.getLogger(AuthorizationProcessor.class);
+
     public void process(Exchange exchange) {
-        System.out.println("ACCESS TOKEN:" + exchange.getIn().getHeader("Authorization"));
+        logger.info("ACCESS TOKEN: " + exchange.getIn().getHeader("Authorization"));
     }
 }
