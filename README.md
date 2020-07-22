@@ -6,7 +6,7 @@ The HNClient V2 application will receive an HL7v2 message over plain TCP and for
 
 This project also includes applications that mock out dependencies:
  - `mock-point-of-service`: a point of service application that sends an HL7v2 message over MLLP.
- - `mock-hnsecure`: a resource endpoint that will receive the secure message and validate the access token.
+ - `mock-hnsecure`: a resource endpoint that receives a message and validates the access token.
 
 # Set-up
 
@@ -16,15 +16,13 @@ Prerequisites:
 
 ## Set the Keycloak client secret as an OS environment variable
 
-`hnclient-v2` requires the client secret for Keycloak client `moh-hnclient`. Lookup the client secret at https://common-logon-dev.hlth.gov.bc.ca. Keycloak credentials are on KeePass.
-
-Once you have the secret, set an OS environment variable:
+In order for `hnclient-v2` to get access tokens from Keycloak, it needs the client secret for Keycloak client `moh-hnclient`. Lookup the client secret at https://common-logon-dev.hlth.gov.bc.ca. Keycloak credentials are on KeePass. Once you have the secret, set an OS environment variable:
 
 `MOH_HNCLIENT_SECRET=SECRET`
 
 ## Add the Keycloak certificate to the Java TrustStore
 
-In order for `hnclient-v2` to get Access Tokens from Keycloak, it needs to trust the Keycloak installation. Download the certificate from https://common-logon-dev.hlth.gov.bc.ca and add it to Java's truststore (e.g. "C:\Dev\AdoptOpenJDK11\lib\security\cacerts")
+In order for `hnclient-v2` to get access tokens from Keycloak, it needs to trust the Keycloak installation. Download the certificate from https://common-logon-dev.hlth.gov.bc.ca and add it to Java's truststore (e.g. "C:\Dev\AdoptOpenJDK11\lib\security\cacerts")
 
 # Run the applications
 
@@ -32,7 +30,7 @@ Prerequisites:
 - Apache Maven 3.6.1+
 - Java 11
 
-hnclient-v2 and mock-hnsecure can be run from the command line:
+`hnclient-v2` and `mock-hnsecure` can be run from the command line:
 
 ```
 cd hnclient-v2
@@ -44,7 +42,7 @@ cd mock-hnsecure
 mvn compile camel:run
 ```
 
-After hnclient-v2 and mock-hnsecure are running, you can send a message:
+After `hnclient-v2` and `mock-hnsecure` are running, you can send a message using `mock-point-of-service`:
 
 ```
 cd mock-point-of-service
