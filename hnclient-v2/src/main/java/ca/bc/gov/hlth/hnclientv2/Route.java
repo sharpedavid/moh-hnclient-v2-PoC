@@ -3,7 +3,7 @@ package ca.bc.gov.hlth.hnclientv2;
 import io.netty.buffer.ByteBuf;
 import org.apache.camel.builder.RouteBuilder;
 
-public class MainRoute extends org.apache.camel.builder.RouteBuilder {
+public class Route extends RouteBuilder {
 
     /**
      * Camel route that:

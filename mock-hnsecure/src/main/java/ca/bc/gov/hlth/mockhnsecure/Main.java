@@ -12,7 +12,7 @@ public final class Main {
         // use Camels Main class
         org.apache.camel.main.Main main = new org.apache.camel.main.Main();
         // and add the routes (you can specify multiple classes)
-        main.configure().addRoutesBuilder(MainRoute.class);
+        main.configure().addRoutesBuilder(Route.class);
         // now keep the application running until the JVM is terminated (ctrl + c or sigterm)
         main.run(args);
     }

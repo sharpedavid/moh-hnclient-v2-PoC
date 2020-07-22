@@ -2,7 +2,7 @@ package ca.bc.gov.hlth.mockhnsecure;
 
 import org.apache.camel.builder.RouteBuilder;
 
-public class MainRoute extends org.apache.camel.builder.RouteBuilder {
+public class Route extends RouteBuilder {
 
     private final String responseMessage = "MSH|^~\\&|RAIGT-PRSN-DMGR|BC00002041|HNWeb|BC01000030|20200206123841|train96|R03|1819924|D|2.4^M\n" +
             "MSA|AA|20200206123840|HJMB001ISUCCESSFULLY COMPLETED^M\n" +

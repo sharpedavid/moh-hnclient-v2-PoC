@@ -10,7 +10,7 @@ public class Main {
      */
     public static void main(String... args) throws Exception {
         org.apache.camel.main.Main main = new org.apache.camel.main.Main();
-        main.configure().addRoutesBuilder(new MainRoute());
+        main.configure().addRoutesBuilder(new Route());
         main.run(args);
     }
 
