@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
-public class OAuthProcessor implements Processor {
+public class RetrieveAccessToken implements Processor {
 
-    private static Logger logger = LoggerFactory.getLogger(OAuthProcessor.class);
+    private static Logger logger = LoggerFactory.getLogger(RetrieveAccessToken.class);
 
     public void process(Exchange exchange) throws Exception {
 

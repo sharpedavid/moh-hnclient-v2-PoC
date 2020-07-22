@@ -6,10 +6,6 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-/**
- *
- * @author trevor.schiavone
- */
 public class HL7v2SendMessage {
 
     public static void main(String[] args) throws Exception {

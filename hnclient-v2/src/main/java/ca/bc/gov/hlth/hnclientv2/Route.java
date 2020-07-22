@@ -15,14 +15,14 @@ public class Route extends RouteBuilder {
     @Override
     public void configure() {
         from("netty:tcp://{{hostname}}:{{port}}")
-                .log("HNClient Received a request")
+                .log("HNClient received a request")
                 .log("Retrieving Access Token")
-                .process(new OAuthProcessor())
+                .process(new RetrieveAccessToken())
                 .log("Sending to hnsecure")
                 .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}")
-                .log("Received response from hnsecure")
+                .log("Received response from HNSecure")
                 .convertBodyTo(String.class)
-                .log("response message: ${body}")
+                .log("Response message: ${body}")
                 .convertBodyTo(ByteBuf.class);
     }
 }

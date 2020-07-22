@@ -5,9 +5,9 @@ import org.apache.camel.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AuthorizationProcessor implements Processor {
+public class ValidateAccessToken implements Processor {
 
-    private static Logger logger = LoggerFactory.getLogger(AuthorizationProcessor.class);
+    private static Logger logger = LoggerFactory.getLogger(ValidateAccessToken.class);
 
     public void process(Exchange exchange) {
         logger.info("ACCESS TOKEN: " + exchange.getIn().getHeader("Authorization"));
