@@ -68,6 +68,14 @@
       <artifactId>camel-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Needed for Camel tests to send messages to HTTP endpoints. -->
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-http</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

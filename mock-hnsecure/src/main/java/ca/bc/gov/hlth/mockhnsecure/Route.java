@@ -12,9 +12,9 @@ public class Route extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("jetty:http://{{hostname}}:{{port}}/{{endpoint}}")
+        from("jetty:http://{{hostname}}:{{port}}/{{endpoint}}").routeId("hnsecure-route")
             .log("HNSecure received a request")
-            .process(new ValidateAccessToken())
+            .process(new ValidateAccessToken()).id("ValidateAccessToken")
             .setBody(simple(responseMessage));
     }
 }
