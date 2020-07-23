@@ -18,7 +18,7 @@ public class Route extends RouteBuilder {
                 .log("HNClient received a request")
                 .log("Retrieving Access Token")
                 .process(new RetrieveAccessToken())
-                .log("Sending to hnsecure")
+                .log("Sending to HNSecure")
                 .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}")
                 .log("Received response from HNSecure")
                 .convertBodyTo(String.class)
