@@ -15,7 +15,7 @@ public class MainMethodTest extends CamelTestSupport {
     public static final String ENDPOINT = "hl7v2";
 
     @Override
-    protected RoutesBuilder createRouteBuilder() throws Exception {
+    protected RoutesBuilder createRouteBuilder() {
         return new Route();
     }
 
@@ -43,6 +43,7 @@ public class MainMethodTest extends CamelTestSupport {
 
         String endpointUri = String.format("http://%s:%s/%s", HOSTNAME, PORT, ENDPOINT);
         String response = template.requestBody(endpointUri, "hi", String.class);
+
         String expectedContains = "BRANTON^DARREN^S";
         assertTrue(
                 String.format("Response should contain '%s', but was '%s'.", expectedContains, response),
