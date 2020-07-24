@@ -53,7 +53,11 @@ public class ValidateAccessToken implements Processor {
         // Set the required JWT claims - these must all be available in the token payload
         // TODO - can this be used to validate the actual claim contents?
         jwtProcessor.setJWTClaimsSetVerifier(new DefaultJWTClaimsVerifier(
-                new JWTClaimsSet.Builder().issuer("https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications").build(),
+                //Exact match claims
+                new JWTClaimsSet.Builder()
+                        .issuer("https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications")
+                        .build(),
+                //Required claims
                 new HashSet<>(Arrays.asList("sub", "iat", "exp", "scope", "clientId", "jti"))));
 
         // Process the token

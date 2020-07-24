@@ -7,35 +7,43 @@ import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 
 import com.nimbusds.oauth2.sdk.token.AccessToken;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
-public class RetrieveAccessToken implements Processor {
+public class RetrieveAccessToken {
 
     private static Logger logger = LoggerFactory.getLogger(RetrieveAccessToken.class);
 
-    public void process(Exchange exchange) throws Exception {
+    public String tokenEndpoint;
+    public String clientId;
+    public String requiredScopes;
+
+    public RetrieveAccessToken(String tokenEndpoint, String clientId, String requiredScopes) {
+        this.tokenEndpoint = tokenEndpoint;
+        this.clientId = clientId;
+        this.requiredScopes = requiredScopes;
+    }
+
+    public AccessToken getToken() throws Exception {
 
         // Construct the client credentials grant
         AuthorizationGrant clientGrant = new ClientCredentialsGrant();
 
         // The credentials to authenticate the client at the token endpoint
-        ClientID clientID = new ClientID("moh-hnclient");
+        ClientID clientID = new ClientID(clientId);
         Secret clientSecret = new Secret(System.getenv("MOH_HNCLIENT_SECRET"));
         ClientAuthentication clientAuth = new ClientSecretBasic(clientID, clientSecret);
 
         // The request scope for the token (may be optional)
-        Scope scope = new Scope("address");
+        Scope scope = new Scope(requiredScopes);
 
         // The token endpoint
-        URI tokenEndpoint = new URI("https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications/protocol/openid-connect/token");
+        URI tokenEndpointUri = new URI(tokenEndpoint);
 
         // Make the token request
-        TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, clientGrant, scope);
+        TokenRequest request = new TokenRequest(tokenEndpointUri, clientAuth, clientGrant, scope);
 
         TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
         if (!response.indicatesSuccess()) {
@@ -51,6 +59,6 @@ public class RetrieveAccessToken implements Processor {
 
         logger.info(String.format("Access token: %s", accessToken.toJSONString()));
 
-        exchange.getIn().setHeader("Authorization", accessToken);
+        return accessToken;
     }
 }

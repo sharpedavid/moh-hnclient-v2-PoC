@@ -1,9 +1,19 @@
 package ca.bc.gov.hlth.hnclientv2;
 
 import io.netty.buffer.ByteBuf;
+import org.apache.camel.PropertyInject;
 import org.apache.camel.builder.RouteBuilder;
 
 public class Route extends RouteBuilder {
+
+    @PropertyInject("token-endpoint")
+    String tokenEndpoint;
+
+    @PropertyInject("client-id")
+    String clientId;
+
+    @PropertyInject("scopes")
+    String scopes;
 
     /**
      * Camel route that:
@@ -17,7 +27,7 @@ public class Route extends RouteBuilder {
         from("netty:tcp://{{hostname}}:{{port}}")
                 .log("HNClient received a request")
                 .log("Retrieving Access Token")
-                .process(new RetrieveAccessToken())
+                .setHeader("Authorization").method(new RetrieveAccessToken(tokenEndpoint, clientId, scopes))
                 .log("Sending to HNSecure")
                 .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}")
                 .log("Received response from HNSecure")
