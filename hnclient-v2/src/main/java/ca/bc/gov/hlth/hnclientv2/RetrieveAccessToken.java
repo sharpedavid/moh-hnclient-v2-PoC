@@ -1,7 +1,7 @@
 package ca.bc.gov.hlth.hnclientv2;
 
+import ca.bc.gov.hlth.hnclientv2.auth.ClientAuthenticationBuilder;
 import com.nimbusds.oauth2.sdk.*;
-import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,17 +16,17 @@ public class RetrieveAccessToken {
     public String tokenEndpoint;
     public String clientId;
     public String requiredScopes;
-    private ClientAuthentication clientAuthentication;
+    private ClientAuthenticationBuilder clientAuthBuilder;
 
-    public RetrieveAccessToken(String tokenEndpoint, String clientId, String requiredScopes, ClientAuthentication clientAuthentication) {
+    public RetrieveAccessToken(String tokenEndpoint, String clientId, String requiredScopes, ClientAuthenticationBuilder clientAuthBuilder) {
         this.tokenEndpoint = tokenEndpoint;
         this.clientId = clientId;
         this.requiredScopes = requiredScopes;
-        this.clientAuthentication = clientAuthentication;
+        this.clientAuthBuilder = clientAuthBuilder;
 
         Util.requireNonBlank(this.tokenEndpoint, "Requires token endpoint.");
         Util.requireNonBlank(this.clientId, "Requires client ID.");
-        Objects.requireNonNull(this.clientAuthentication, "Requires client authentication.");
+        Objects.requireNonNull(this.clientAuthBuilder, "Requires client authentication.");
     }
 
     public AccessToken getToken() throws Exception {
@@ -41,7 +41,7 @@ public class RetrieveAccessToken {
         URI tokenEndpointUri = new URI(tokenEndpoint);
 
         // Make the token request
-        TokenRequest request = new TokenRequest(tokenEndpointUri, clientAuthentication, clientGrant, scope);
+        TokenRequest request = new TokenRequest(tokenEndpointUri, clientAuthBuilder.build(), clientGrant, scope);
 
         TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
         if (!response.indicatesSuccess()) {

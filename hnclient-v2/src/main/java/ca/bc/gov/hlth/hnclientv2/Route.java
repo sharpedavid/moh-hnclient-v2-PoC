@@ -1,5 +1,6 @@
 package ca.bc.gov.hlth.hnclientv2;
 
+import ca.bc.gov.hlth.hnclientv2.auth.ClientAuthenticationBuilder;
 import ca.bc.gov.hlth.hnclientv2.auth.ClientIdSecretBuilder;
 import ca.bc.gov.hlth.hnclientv2.auth.SignedJwtBuilder;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
@@ -39,12 +40,12 @@ public class Route extends RouteBuilder {
     @Override
     public void configure() {
 
-        ClientAuthentication clientAuth = getClientAuthentication();
+        ClientAuthenticationBuilder clientAuthenticationBuilder = getClientAuthentication();
 
         from("netty:tcp://{{hostname}}:{{port}}")
                 .log("HNClient received a request")
                 .log("Retrieving Access Token")
-                .setHeader("Authorization").method(new RetrieveAccessToken(tokenEndpoint, clientId, scopes, clientAuth))
+                .setHeader("Authorization").method(new RetrieveAccessToken(tokenEndpoint, clientId, scopes, clientAuthenticationBuilder))
                 .log("Sending to HNSecure")
                 .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}")
                 .log("Received response from HNSecure")
@@ -53,11 +54,11 @@ public class Route extends RouteBuilder {
                 .convertBodyTo(ByteBuf.class);
     }
 
-    private ClientAuthentication getClientAuthentication() {
+    private ClientAuthenticationBuilder getClientAuthentication() {
         if (clientAuthType.equals("SIGNED_JWT")) {
-            return new SignedJwtBuilder(new File(jksFile), keyAlias, tokenEndpoint).build();
+            return new SignedJwtBuilder(new File(jksFile), keyAlias, tokenEndpoint);
         } else if (clientAuthType.equals("CLIENT_ID_SECRET")) {
-            return new ClientIdSecretBuilder(clientId).build();
+            return new ClientIdSecretBuilder(clientId);
         } else {
             throw new IllegalStateException(String.format("Unrecognized client authentication type: '%s'", clientAuthType));
         }
