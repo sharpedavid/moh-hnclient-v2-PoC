@@ -1,19 +1,33 @@
 package ca.bc.gov.hlth.hnclientv2;
 
+import ca.bc.gov.hlth.hnclientv2.auth.ClientIdSecretBuilder;
+import ca.bc.gov.hlth.hnclientv2.auth.SignedJwtBuilder;
+import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import io.netty.buffer.ByteBuf;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.builder.RouteBuilder;
 
+import java.io.File;
+
 public class Route extends RouteBuilder {
 
-    @PropertyInject("token-endpoint")
+    @PropertyInject(value = "token-endpoint", defaultValue ="")
     String tokenEndpoint;
 
-    @PropertyInject("client-id")
+    @PropertyInject(value = "client-id", defaultValue = "")
     String clientId;
 
-    @PropertyInject("scopes")
+    @PropertyInject(value = "scopes", defaultValue = "")
     String scopes;
+
+    @PropertyInject(value = "client-auth-type", defaultValue = "")
+    String clientAuthType;
+
+    @PropertyInject(value = "jks-file", defaultValue = "")
+    private String jksFile;
+
+    @PropertyInject(value = "jks-key-alias", defaultValue = "")
+    private String keyAlias;
 
     /**
      * Camel route that:
@@ -24,15 +38,28 @@ public class Route extends RouteBuilder {
      */
     @Override
     public void configure() {
+
+        ClientAuthentication clientAuth = getClientAuthentication();
+
         from("netty:tcp://{{hostname}}:{{port}}")
                 .log("HNClient received a request")
                 .log("Retrieving Access Token")
-                .setHeader("Authorization").method(new RetrieveAccessToken(tokenEndpoint, clientId, scopes))
+                .setHeader("Authorization").method(new RetrieveAccessToken(tokenEndpoint, clientId, scopes, clientAuth))
                 .log("Sending to HNSecure")
                 .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}")
                 .log("Received response from HNSecure")
                 .convertBodyTo(String.class)
                 .log("Response message: ${body}")
                 .convertBodyTo(ByteBuf.class);
+    }
+
+    private ClientAuthentication getClientAuthentication() {
+        if (clientAuthType.equals("SIGNED_JWT")) {
+            return new SignedJwtBuilder(new File(jksFile), keyAlias, tokenEndpoint).build();
+        } else if (clientAuthType.equals("CLIENT_ID_SECRET")) {
+            return new ClientIdSecretBuilder(clientId).build();
+        } else {
+            throw new IllegalStateException(String.format("Unrecognized client authentication type: '%s'", clientAuthType));
+        }
     }
 }

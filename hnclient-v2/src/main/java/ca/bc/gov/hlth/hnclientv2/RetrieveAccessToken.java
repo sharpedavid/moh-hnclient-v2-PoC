@@ -2,15 +2,12 @@ package ca.bc.gov.hlth.hnclientv2;
 
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
-import com.nimbusds.oauth2.sdk.auth.Secret;
-import com.nimbusds.oauth2.sdk.id.ClientID;
-
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.util.Objects;
 
 public class RetrieveAccessToken {
 
@@ -19,22 +16,23 @@ public class RetrieveAccessToken {
     public String tokenEndpoint;
     public String clientId;
     public String requiredScopes;
+    private ClientAuthentication clientAuthentication;
 
-    public RetrieveAccessToken(String tokenEndpoint, String clientId, String requiredScopes) {
+    public RetrieveAccessToken(String tokenEndpoint, String clientId, String requiredScopes, ClientAuthentication clientAuthentication) {
         this.tokenEndpoint = tokenEndpoint;
         this.clientId = clientId;
         this.requiredScopes = requiredScopes;
+        this.clientAuthentication = clientAuthentication;
+
+        Util.requireNonBlank(this.tokenEndpoint, "Requires token endpoint.");
+        Util.requireNonBlank(this.clientId, "Requires client ID.");
+        Objects.requireNonNull(this.clientAuthentication, "Requires client authentication.");
     }
 
     public AccessToken getToken() throws Exception {
 
         // Construct the client credentials grant
         AuthorizationGrant clientGrant = new ClientCredentialsGrant();
-
-        // The credentials to authenticate the client at the token endpoint
-        ClientID clientID = new ClientID(clientId);
-        Secret clientSecret = new Secret(System.getenv("MOH_HNCLIENT_SECRET"));
-        ClientAuthentication clientAuth = new ClientSecretBasic(clientID, clientSecret);
 
         // The request scope for the token (may be optional)
         Scope scope = new Scope(requiredScopes);
@@ -43,7 +41,7 @@ public class RetrieveAccessToken {
         URI tokenEndpointUri = new URI(tokenEndpoint);
 
         // Make the token request
-        TokenRequest request = new TokenRequest(tokenEndpointUri, clientAuth, clientGrant, scope);
+        TokenRequest request = new TokenRequest(tokenEndpointUri, clientAuthentication, clientGrant, scope);
 
         TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
         if (!response.indicatesSuccess()) {
