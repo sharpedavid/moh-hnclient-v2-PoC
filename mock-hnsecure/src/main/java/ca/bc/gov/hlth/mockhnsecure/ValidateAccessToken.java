@@ -10,6 +10,7 @@ import com.nimbusds.jose.proc.DefaultJOSEObjectTypeVerifier;
 import com.nimbusds.jose.proc.JWSKeySelector;
 import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jose.util.DefaultResourceRetriever;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
@@ -42,7 +43,9 @@ public class ValidateAccessToken implements Processor {
         // The RemoteJWKSet caches the retrieved keys to speed up subsequent look-ups
         JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
         JWKSource<SecurityContext> keySource = new RemoteJWKSet<>(
-                new URL("https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications/protocol/openid-connect/certs")
+                new URL("https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications/protocol/openid-connect/certs"),
+                // Overrides the DefaultResourceRetriever to up the timeouts to 5 seconds
+                new DefaultResourceRetriever(5000, 5000, 51200)
         );
 
         // Configure the JWT processor with a key selector to feed matching public
