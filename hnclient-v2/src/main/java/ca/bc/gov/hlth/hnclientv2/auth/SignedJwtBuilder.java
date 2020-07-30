@@ -37,18 +37,21 @@ public class SignedJwtBuilder implements ClientAuthenticationBuilder {
     private final File keystoreFile;
     private final String keyAlias;
     private final String tokenEndpoint;
-    private final String keystorePassword;
+    private final RSAPrivateKey privateKey;
 
-    public SignedJwtBuilder(File keystoreFile, String alias, String tokenEndpoint) {
+    public SignedJwtBuilder(File keystoreFile, String keyAlias, String tokenEndpoint) throws Exception {
+        Objects.requireNonNull(keystoreFile, "Requires keystore file.");
+        Util.requireNonBlank(keyAlias, "Requires key alias.");
+        Util.requireNonBlank(tokenEndpoint, "Requires token endpoint.");
+        String keystorePassword = System.getenv("MOH_HNCLIENT_KEYSTORE_PASSWORD");
+        Objects.requireNonNull(keystorePassword, "Requires keystore password.");
+
         this.keystoreFile = keystoreFile;
-        this.keyAlias = alias;
+        this.keyAlias = keyAlias;
         this.tokenEndpoint = tokenEndpoint;
-        keystorePassword = System.getenv("MOH_HNCLIENT_KEYSTORE_PASSWORD");
 
-        Objects.requireNonNull(this.keystoreFile, "Requires keystore file.");
-        Util.requireNonBlank(this.keyAlias, "Requires key alias.");
-        Util.requireNonBlank(this.tokenEndpoint, "Requires token endpoint.");
-        Objects.requireNonNull(this.keystorePassword, "Requires keystore password.");
+        KeyStore keyStore = loadKeyStore(this.keystoreFile, keystorePassword, "JKS");
+        privateKey = (RSAPrivateKey) keyStore.getKey(this.keyAlias, keystorePassword.toCharArray());
     }
 
     @Override
@@ -57,9 +60,7 @@ public class SignedJwtBuilder implements ClientAuthenticationBuilder {
         try {
             ClientID clientID = new ClientID(keyAlias);
             URI tokenEndpoint = new URI(this.tokenEndpoint);
-            KeyStore keyStore = loadKeyStore(keystoreFile, keystorePassword, "JKS");
-            RSAPrivateKey key = (RSAPrivateKey) keyStore.getKey(keyAlias, keystorePassword.toCharArray());
-            return new PrivateKeyJWT(clientID, tokenEndpoint, JWSAlgorithm.RS256, key, null, null);
+            return new PrivateKeyJWT(clientID, tokenEndpoint, JWSAlgorithm.RS256, privateKey, null, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

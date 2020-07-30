@@ -39,10 +39,10 @@ public class Route extends RouteBuilder {
      *   4. Returns the response
      */
     @Override
-    public void configure() throws URISyntaxException {
+    public void configure() throws Exception {
 
-        ClientAuthenticationBuilder clientAuthenticationBuilder = getClientAuthentication();
-        RetrieveAccessToken retrieveAccessToken = new RetrieveAccessToken(tokenEndpoint, scopes, clientAuthenticationBuilder);
+        ClientAuthenticationBuilder clientAuthBuilder = getClientAuthentication();
+        RetrieveAccessToken retrieveAccessToken = new RetrieveAccessToken(tokenEndpoint, scopes, clientAuthBuilder);
 
         from("netty:tcp://{{hostname}}:{{port}}")
                 .log("HNClient received a request")
@@ -56,7 +56,7 @@ public class Route extends RouteBuilder {
                 .convertBodyTo(ByteBuf.class);
     }
 
-    private ClientAuthenticationBuilder getClientAuthentication() {
+    private ClientAuthenticationBuilder getClientAuthentication() throws Exception {
         if (clientAuthType.equals("SIGNED_JWT")) {
             return new SignedJwtBuilder(new File(jksFile), keyAlias, tokenEndpoint);
         } else if (clientAuthType.equals("CLIENT_ID_SECRET")) {
