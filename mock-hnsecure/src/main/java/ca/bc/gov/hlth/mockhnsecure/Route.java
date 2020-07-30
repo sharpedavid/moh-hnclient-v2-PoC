@@ -8,7 +8,7 @@ public class Route extends RouteBuilder {
             "MSA|AA|20200206123840|HJMB001ISUCCESSFULLY COMPLETED^M\n" +
             "ERR|^^^HJMB001I&SUCCESSFULLY COMPLETED^M\n" +
             "PID||123456789^^^BC^PH^MOH|||||19840225|M^M\n" +
-            "ZIA|||||||||||||||BRANTON^DARREN^S^^^^L|912 YATES ST^^^^^^^^^^^^^^^^^^^VICTORIA^BC^V8V3M2^CAN^H^^^^N|^PRN^PH^^^250^6611681";
+            "ZIA|||||||||||||||LASTNAME^FIRST^S^^^^L|912 VIEW ST^^^^^^^^^^^^^^^^^^^VICTORIA^BC^V8V3M2^CAN^H^^^^N|^PRN^PH^^^250^1234568";
 
     @Override
     public void configure() {
