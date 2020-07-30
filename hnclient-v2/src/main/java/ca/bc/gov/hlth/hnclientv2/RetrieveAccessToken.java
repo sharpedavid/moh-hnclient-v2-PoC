@@ -2,46 +2,56 @@ package ca.bc.gov.hlth.hnclientv2;
 
 import ca.bc.gov.hlth.hnclientv2.auth.ClientAuthenticationBuilder;
 import com.nimbusds.oauth2.sdk.*;
+import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.Objects;
 
 public class RetrieveAccessToken {
 
     private static Logger logger = LoggerFactory.getLogger(RetrieveAccessToken.class);
 
-    public String tokenEndpoint;
-    public String clientId;
-    public String requiredScopes;
+    private URI tokenEndpointUri;
+    private Scope requiredScopes;
     private ClientAuthenticationBuilder clientAuthBuilder;
 
-    public RetrieveAccessToken(String tokenEndpoint, String clientId, String requiredScopes, ClientAuthenticationBuilder clientAuthBuilder) {
-        this.tokenEndpoint = tokenEndpoint;
-        this.clientId = clientId;
-        this.requiredScopes = requiredScopes;
-        this.clientAuthBuilder = clientAuthBuilder;
+    private AccessToken accessToken;
+    private long tokenExpiryTime;
 
-        Util.requireNonBlank(this.tokenEndpoint, "Requires token endpoint.");
-        Util.requireNonBlank(this.clientId, "Requires client ID.");
+    public RetrieveAccessToken(String tokenEndpoint, String scope, ClientAuthenticationBuilder clientAuthBuilder) throws URISyntaxException {
+
+        //TODO this accepts a string array or multiple strings - will need to update to allow multiple scopes
+        this.requiredScopes = new Scope(scope);
+        this.tokenEndpointUri = new URI(tokenEndpoint);
+        this.clientAuthBuilder = clientAuthBuilder;
         Objects.requireNonNull(this.clientAuthBuilder, "Requires client authentication.");
     }
 
-    public AccessToken getToken() throws Exception {
+    public synchronized AccessToken getToken() throws Exception {
 
-        // Construct the client credentials grant
+        // Reuse the token if the expiry time is more than a minute away
+        if (Instant.now().toEpochMilli() + 60_000 < tokenExpiryTime) {
+            logger.info(String.format("Using existing access token"));
+            logger.info(String.format("Access token: %s", accessToken.toJSONString()));
+            return accessToken;
+        }
+
+        // Construct the client credentials grant type
         AuthorizationGrant clientGrant = new ClientCredentialsGrant();
 
-        // The request scope for the token (may be optional)
-        Scope scope = new Scope(requiredScopes);
-
-        // The token endpoint
-        URI tokenEndpointUri = new URI(tokenEndpoint);
+        // Get the client authentication method
+        ClientAuthentication clientAuthentication = clientAuthBuilder.build();
 
         // Make the token request
-        TokenRequest request = new TokenRequest(tokenEndpointUri, clientAuthBuilder.build(), clientGrant, scope);
+        TokenRequest request = new TokenRequest(tokenEndpointUri, clientAuthentication, clientGrant, requiredScopes);
 
         TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
         if (!response.indicatesSuccess()) {
@@ -52,10 +62,13 @@ public class RetrieveAccessToken {
 
         AccessTokenResponse successResponse = response.toSuccessResponse();
 
-        // Get the access token
-        AccessToken accessToken = successResponse.getTokens().getAccessToken();
+        // Get the access token and set the expiry time
+        accessToken = successResponse.getTokens().getAccessToken();
+        // This could be off by a few seconds because it doesn't account for network latency getting the token
+        tokenExpiryTime = Instant.now().toEpochMilli() + (accessToken.getLifetime() * 1000);
 
         logger.info(String.format("Access token: %s", accessToken.toJSONString()));
+        logger.info(String.format("Token Expires at: %s", tokenExpiryTime));
 
         return accessToken;
     }

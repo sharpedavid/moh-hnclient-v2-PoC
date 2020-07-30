@@ -9,6 +9,7 @@ import org.apache.camel.PropertyInject;
 import org.apache.camel.builder.RouteBuilder;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 public class Route extends RouteBuilder {
 
@@ -38,14 +39,15 @@ public class Route extends RouteBuilder {
      *   4. Returns the response
      */
     @Override
-    public void configure() {
+    public void configure() throws URISyntaxException {
 
         ClientAuthenticationBuilder clientAuthenticationBuilder = getClientAuthentication();
+        RetrieveAccessToken retrieveAccessToken = new RetrieveAccessToken(tokenEndpoint, scopes, clientAuthenticationBuilder);
 
         from("netty:tcp://{{hostname}}:{{port}}")
                 .log("HNClient received a request")
                 .log("Retrieving Access Token")
-                .setHeader("Authorization").method(new RetrieveAccessToken(tokenEndpoint, clientId, scopes, clientAuthenticationBuilder))
+                .setHeader("Authorization").method(retrieveAccessToken)
                 .log("Sending to HNSecure")
                 .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}")
                 .log("Received response from HNSecure")
