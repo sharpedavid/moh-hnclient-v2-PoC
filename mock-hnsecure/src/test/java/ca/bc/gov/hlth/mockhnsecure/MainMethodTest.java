@@ -44,7 +44,7 @@ public class MainMethodTest extends CamelTestSupport {
         String endpointUri = String.format("http://%s:%s/%s", HOSTNAME, PORT, ENDPOINT);
         String response = template.requestBody(endpointUri, "hi", String.class);
 
-        String expectedContains = "BRANTON^DARREN^S";
+        String expectedContains = "LASTNAME^FIRST^S";
         assertTrue(
                 String.format("Response should contain '%s', but was '%s'.", expectedContains, response),
                 response.contains(expectedContains)
