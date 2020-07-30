@@ -46,7 +46,7 @@ public class Route extends RouteBuilder {
 
         from("netty:tcp://{{hostname}}:{{port}}")
                 .log("HNClient received a request")
-                .log("Retrieving Access Token")
+                .log("Retrieving access token")
                 .setHeader("Authorization").method(retrieveAccessToken)
                 .log("Sending to HNSecure")
                 .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}")
