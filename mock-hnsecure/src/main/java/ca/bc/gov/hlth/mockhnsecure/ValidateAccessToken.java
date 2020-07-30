@@ -41,6 +41,7 @@ public class ValidateAccessToken implements Processor {
 
         // The public RSA keys to validate the signatures
         // The RemoteJWKSet caches the retrieved keys to speed up subsequent look-ups
+        // TODO this should be moved into the constructor to make use of the JWK caching
         JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
         JWKSource<SecurityContext> keySource = new RemoteJWKSet<>(
                 new URL("https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications/protocol/openid-connect/certs"),
