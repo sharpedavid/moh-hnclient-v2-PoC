@@ -8,7 +8,7 @@ This project also includes applications that mock-out dependencies:
  - `mock-point-of-service`: a point of service application that sends an HL7v2 message over MLLP.
  - `mock-hnsecure`: a resource endpoint that receives a message and validates the access token.
 
- ![hnclientv2](https://user-images.githubusercontent.com/1767127/88600214-80683580-d022-11ea-947b-49e166e5e1ee.png)
+ ![hnclientv2](https://user-images.githubusercontent.com/1767127/88949525-36f92f80-d248-11ea-9de7-1479222f1cfd.png)
 
 # Configuration
 
