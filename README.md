@@ -4,9 +4,10 @@
 
 The `hnclient-v2` application will receive an HL7v2 message over plain TCP and forward it to a secure endpoint over HTTPS with an OAuth2 access token (retrieved using the OAuth Client Credential Grant).
 
-This project also includes applications that mock-out dependencies:
+This project also includes applications that mock-out dependencies or provide additional functionality:
  - `mock-point-of-service`: a point of service application that sends an HL7v2 message over MLLP.
  - `mock-hnsecure`: a resource endpoint that receives a message and validates the access token.
+ - `renew-client-auth-certs`: a tool to renew the jks file used to authenticate to Keycloak an retreive an access token. The functionality of this tool is also built into hnclient-v2 but in that case will only run once the certificate has reached 30 days from expiry. 
 
  ![hnclientv2](https://user-images.githubusercontent.com/1767127/88949525-36f92f80-d248-11ea-9de7-1479222f1cfd.png)
 
@@ -26,6 +27,8 @@ By default, `hnclient-v2` and our Keycloak development server are configured to 
 2. In `hnclient-v2`'s `application.properties` file, set `jks-file=JKS_FILE_LOCATION`.
 3. Set `MOH_HNCLIENT_KEYSTORE_PASSWORD` as an operating system environment variable. The password is also in KeePass on the `moh-hnclient` record.
 4. In the `hnclient-v2` `application.properties` file, ensure that `client-auth-type = SIGNED_JWT`.
+
+On startup `hnclient-v2` will automatically renew the JKS file and upload the public key to keycloak if the certificate is within 30 days from expiry. (11 months old based on the codes current configuration). When this happens the new key will need to be stored in KeePass so that other developers can get the new key. If you are testing or modifying this feature be sure to use a different client in Keycloak so that you don't change the key for the `moh-hnclient` client in Keycloak that other developers may be using. To do this you will need to update the JKS properties in `application.properties` and the `keystorePassword` in `route.java`.
 
 ### Client ID and Password (optional)
 
