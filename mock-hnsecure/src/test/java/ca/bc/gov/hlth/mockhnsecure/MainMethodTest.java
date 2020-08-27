@@ -13,6 +13,7 @@ public class MainMethodTest extends CamelTestSupport {
     public static final int PORT = AvailablePortFinder.getNextAvailable();
     public static final String HOSTNAME = "localhost";
     public static final String ENDPOINT = "hl7v2";
+    public static final String INPUT_MESSAGE = InputMessages.MESSAGE_1;
 
     @Override
     protected RoutesBuilder createRouteBuilder() {
@@ -42,7 +43,7 @@ public class MainMethodTest extends CamelTestSupport {
         context.start();
 
         String endpointUri = String.format("http://%s:%s/%s", HOSTNAME, PORT, ENDPOINT);
-        String response = template.requestBody(endpointUri, "hi", String.class);
+        String response = template.requestBody(endpointUri, INPUT_MESSAGE, String.class);
 
         String expectedContains = "LASTNAME^FIRST^S";
         assertTrue(

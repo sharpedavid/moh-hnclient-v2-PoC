@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class HL7v2SendMessage {
 
-    String msg = "{\n" +
+    public static String msg = "{\n" +
             "\t\"resourceType\": \"Bundle\",\n" +
             "\t\"id\": \"10bb101f-a121-4264-a920-67be9cb82c74\",\n" +
             "\t\"type\": \"message\",\n" +
@@ -34,7 +34,7 @@ public class HL7v2SendMessage {
             "\t\t\t\t\"resourceType\": \"Binary\",\n" +
             "\t\t\t\t\"id\": \"3f34f-df333-cddddd3p3-fr45\",\n" +
             "\t\t\t\t\"contentType\": \" x-application/hl7-v2+er7\",\n" +
-            "\t\t\t\t\"data \": \"MDAwMDAzNTJNU0h8Xn5cJnxITldFQnxWSUhBfFJBSUdULVBSU04tRE1HUnxCQzAwMDAxMDEzfDIwMTcwMTI1MTIyMTI1fHRyYWluOTZ8UjAzfDIwMTcwMTI1MTIyMTI1fER8Mi40fHwKWkhEfDIwMTcwMTI1MTIyMTI1fF5eMDAwMDAwMTB8SE5BSUFETUlOSVNUUkFUSU9OfHx8fDIuNApQSUR8fDEyMzQ1Njc4OTBeXl5CQ15QSA==\"\n" +
+            "\t\t\t\t\"data\": \"MDAwMDAzNTJNU0h8Xn5cJnxITldFQnxWSUhBfFJBSUdULVBSU04tRE1HUnxCQzAwMDAxMDEzfDIwMTcwMTI1MTIyMTI1fHRyYWluOTZ8UjAzfDIwMTcwMTI1MTIyMTI1fER8Mi40fHwKWkhEfDIwMTcwMTI1MTIyMTI1fF5eMDAwMDAwMTB8SE5BSUFETUlOSVNUUkFUSU9OfHx8fDIuNApQSUR8fDEyMzQ1Njc4OTBeXl5CQ15QSA==\"\n" +
             "\t\t\t}\n" +
             "\t\t}\n" +
             "\t]\n" +
@@ -44,7 +44,7 @@ public class HL7v2SendMessage {
         try (Socket sock = new Socket("127.0.0.1", 8080)) {
             String output;
 //            String msg = readInput(args[0]);
-            String msg = "This is a test message from a mock Point of Service";
+            // String msg = "This is a test message from a mock Point of Service";
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             //baos.write(0x0b); //header byte
             //baos.write(msg.length()); //length... does this need to be padded?

@@ -1,5 +1,6 @@
 package ca.bc.gov.hlth.mockhnsecure;
 
+import org.apache.camel.Expression;
 import org.apache.camel.builder.RouteBuilder;
 
 public class Route extends RouteBuilder {
@@ -12,9 +13,12 @@ public class Route extends RouteBuilder {
 
     @Override
     public void configure() {
+
         from("jetty:http://{{hostname}}:{{port}}/{{endpoint}}").routeId("hnsecure-route")
             .log("HNSecure received a request")
             .process(new ValidateAccessToken()).id("ValidateAccessToken")
+            .setBody().method(new FhirPayloadExtractor())
+            .log("Decoded V2: ${body}")
             .setBody(simple(responseMessage));
     }
 }

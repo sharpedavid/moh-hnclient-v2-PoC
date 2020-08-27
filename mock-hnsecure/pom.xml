@@ -46,6 +46,10 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-jetty</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-bean</artifactId>
+    </dependency>
 
     <!-- validate OAuth access tokens -->
     <dependency>

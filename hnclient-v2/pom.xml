@@ -54,6 +54,19 @@
       <artifactId>camel-bean</artifactId>
     </dependency>
 
+    <!-- crypto algorithms -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.66</version>
+    </dependency>
+    <!-- certificate generation -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk15on</artifactId>
+      <version>1.66</version>
+    </dependency>
+
     <!-- logging -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

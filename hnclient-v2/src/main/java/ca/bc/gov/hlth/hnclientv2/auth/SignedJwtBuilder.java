@@ -1,5 +1,6 @@
 package ca.bc.gov.hlth.hnclientv2.auth;
 
+import ca.bc.gov.hlth.hnclientv2.keystore.KeystoreTools;
 import ca.bc.gov.hlth.hnclientv2.Util;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
@@ -9,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.InputStream;
 import java.net.URI;
 import java.security.KeyStore;
 import java.security.interfaces.RSAPrivateKey;
@@ -32,25 +32,22 @@ import java.util.Objects;
  */
 public class SignedJwtBuilder implements ClientAuthenticationBuilder {
 
-    private static Logger logger = LoggerFactory.getLogger(SignedJwtBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(SignedJwtBuilder.class);
 
-    private final File keystoreFile;
     private final String keyAlias;
-    private final String tokenEndpoint;
+    private final URI tokenEndpoint;
     private final RSAPrivateKey privateKey;
 
-    public SignedJwtBuilder(File keystoreFile, String keyAlias, String tokenEndpoint) throws Exception {
+    public SignedJwtBuilder(File keystoreFile, String keyAlias, String tokenEndpoint, String keystorePassword) throws Exception {
         Objects.requireNonNull(keystoreFile, "Requires keystore file.");
         Util.requireNonBlank(keyAlias, "Requires key alias.");
         Util.requireNonBlank(tokenEndpoint, "Requires token endpoint.");
-        String keystorePassword = System.getenv("MOH_HNCLIENT_KEYSTORE_PASSWORD");
         Objects.requireNonNull(keystorePassword, "Requires keystore password.");
 
-        this.keystoreFile = keystoreFile;
         this.keyAlias = keyAlias;
-        this.tokenEndpoint = tokenEndpoint;
+        this.tokenEndpoint = new URI(tokenEndpoint);
 
-        KeyStore keyStore = loadKeyStore(this.keystoreFile, keystorePassword, "JKS");
+        KeyStore keyStore = KeystoreTools.loadKeyStore(keystoreFile, keystorePassword, "JKS");
         privateKey = (RSAPrivateKey) keyStore.getKey(this.keyAlias, keystorePassword.toCharArray());
     }
 
@@ -59,18 +56,9 @@ public class SignedJwtBuilder implements ClientAuthenticationBuilder {
         logger.info("Building signed JWT.");
         try {
             ClientID clientID = new ClientID(keyAlias);
-            URI tokenEndpoint = new URI(this.tokenEndpoint);
             return new PrivateKeyJWT(clientID, tokenEndpoint, JWSAlgorithm.RS256, privateKey, null, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private static KeyStore loadKeyStore(File keystoreFile, String password, String keyStoreType) throws Exception {
-        try (InputStream is = keystoreFile.toURI().toURL().openStream()) {
-            KeyStore keystore = KeyStore.getInstance(keyStoreType);
-            keystore.load(is, password.toCharArray());
-            return keystore;
         }
     }
 }
