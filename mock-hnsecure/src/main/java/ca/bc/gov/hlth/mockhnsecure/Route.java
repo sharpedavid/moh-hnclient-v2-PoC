@@ -1,6 +1,9 @@
 package ca.bc.gov.hlth.mockhnsecure;
 
-import org.apache.camel.Expression;
+import ca.bc.gov.hlth.mockhnsecure.authorization.AuthorizationProperties;
+import ca.bc.gov.hlth.mockhnsecure.authorization.V2PayloadValidator;
+import ca.bc.gov.hlth.mockhnsecure.authorization.ValidateAccessToken;
+import org.apache.camel.PropertyInject;
 import org.apache.camel.builder.RouteBuilder;
 
 public class Route extends RouteBuilder {
@@ -11,14 +14,29 @@ public class Route extends RouteBuilder {
             "PID||123456789^^^BC^PH^MOH|||||19840225|M^M\n" +
             "ZIA|||||||||||||||LASTNAME^FIRST^S^^^^L|912 VIEW ST^^^^^^^^^^^^^^^^^^^VICTORIA^BC^V8V3M2^CAN^H^^^^N|^PRN^PH^^^250^1234568";
 
+    @PropertyInject(value = "audience")
+    private String audiences;
+    @PropertyInject(value = "authorized-parties")
+    private String authorizedParties;
+    @PropertyInject(value = "scopes")
+    private String scopes;
+    @PropertyInject(value = "valid-v2-message-types")
+    private String validV2MessageTypes;
+
     @Override
     public void configure() {
 
+        AuthorizationProperties authProperties = new AuthorizationProperties(audiences, authorizedParties, scopes, validV2MessageTypes);
+        //TODO just pass auth properties into the method
+        V2PayloadValidator v2PayloadValidator = new V2PayloadValidator(authProperties);
+        ValidateAccessToken validateAccessToken = new ValidateAccessToken(authProperties);
+
         from("jetty:http://{{hostname}}:{{port}}/{{endpoint}}").routeId("hnsecure-route")
             .log("HNSecure received a request")
-            .process(new ValidateAccessToken()).id("ValidateAccessToken")
+            .process(validateAccessToken).id("ValidateAccessToken")
             .setBody().method(new FhirPayloadExtractor())
             .log("Decoded V2: ${body}")
+            .bean(V2PayloadValidator.class).id("V2PayloadValidator")
             .setBody(simple(responseMessage));
     }
 }

@@ -31,6 +31,7 @@ public class MainMethodTest extends CamelTestSupport {
         extra.put("hostname", HOSTNAME);
         extra.put("port", PORT);
         extra.put("endpoint", ENDPOINT);
+        extra.put("valid-v2-message-types",  "r03, r07, r09");
         return extra;
     }
 
@@ -39,6 +40,7 @@ public class MainMethodTest extends CamelTestSupport {
         AdviceWithRouteBuilder.adviceWith(context, "hnsecure-route", a -> {
             // TODO: Really test ValidateAccessToken. You need an access token and a public key.
             a.weaveById("ValidateAccessToken").remove();
+            a.weaveById("V2PayloadValidator").remove();
         });
         context.start();
 
