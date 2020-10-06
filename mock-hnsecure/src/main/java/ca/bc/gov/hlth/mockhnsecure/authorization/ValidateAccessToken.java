@@ -14,6 +14,8 @@ import com.nimbusds.jose.util.DefaultResourceRetriever;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.slf4j.Logger;
@@ -40,9 +42,9 @@ public class ValidateAccessToken implements Processor {
 
     @Override
     public void process(Exchange exchange)
-            throws MalformedURLException, ParseException, JOSEException, BadJOSEException {
+            throws Exception {
 
-        String accessToken = exchange.getIn().getHeader("Authorization").toString();
+        AccessToken accessToken = AccessToken.parse(exchange.getIn().getHeader("Authorization").toString());
         logger.info(String.format("Access token: %s", accessToken));
 
         // Create a JWT processor for the access tokens
@@ -85,7 +87,7 @@ public class ValidateAccessToken implements Processor {
         );
 
         // Process the token
-        JWTClaimsSet claimsSet = jwtProcessor.process(accessToken, null);
+        JWTClaimsSet claimsSet = jwtProcessor.process(accessToken.toString(), null);
 
         // Print out the token claims set
         logger.info("TOKEN PAYLOAD: " + claimsSet.toJSONObject());

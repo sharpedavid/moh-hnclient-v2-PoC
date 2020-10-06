@@ -8,6 +8,9 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
 
+/**
+ * Copied from https://stackoverflow.com/a/54675316/201891
+ */
 public class MultiPartBodyPublisher {
     private List<PartsSpecification> partsSpecificationList = new ArrayList<>();
     private String boundary = UUID.randomUUID().toString();

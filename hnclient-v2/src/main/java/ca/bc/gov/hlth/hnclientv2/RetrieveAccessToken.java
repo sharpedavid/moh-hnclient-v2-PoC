@@ -32,13 +32,13 @@ public class RetrieveAccessToken {
         Objects.requireNonNull(this.clientAuthBuilder, "Requires client authentication.");
     }
 
-    public synchronized AccessToken getToken() throws Exception {
+    public synchronized String getToken() throws Exception {
 
         // Reuse the token if the expiry time is more than a minute away
         if (Instant.now().toEpochMilli() + 60_000 < tokenExpiryTime) {
             logger.info(String.format("Using existing access token"));
-            logger.info(String.format("Access token: %s", accessToken.toJSONString()));
-            return accessToken;
+            logger.debug(String.format("Access token: %s", accessToken.toJSONString()));
+            return accessToken.toAuthorizationHeader();
         }
 
         // Construct the client credentials grant type
@@ -64,9 +64,9 @@ public class RetrieveAccessToken {
         // This could be off by a few seconds because it doesn't account for network latency getting the token
         tokenExpiryTime = Instant.now().toEpochMilli() + (accessToken.getLifetime() * 1000);
 
-        logger.info(String.format("Access token: %s", accessToken.toJSONString()));
+        logger.debug(String.format("Access token: %s", accessToken.toJSONString()));
         logger.info(String.format("Token Expires at: %s", tokenExpiryTime));
 
-        return accessToken;
+        return accessToken.toAuthorizationHeader();
     }
 }

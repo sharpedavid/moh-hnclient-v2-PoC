@@ -21,7 +21,7 @@ public class RenewKeys {
 
     private static final Logger logger = LoggerFactory.getLogger(RenewKeys.class);
 
-    public static void renewKeys(AccessToken accessToken, int certExpiryYears,
+    public static void renewKeys(String accessToken, int certExpiryYears,
                                  String clientId, String pathToKeystore, String pathToCert,
                                  String certUploadEndpoint,
                                  String keystorePassword) throws Exception {
@@ -60,7 +60,7 @@ public class RenewKeys {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest certUpdateRequest = HttpRequest.newBuilder()
                 .uri(URI.create(certUploadEndpoint))
-                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization",  accessToken)
                 .header("Accept", "application/json, text/plain, */*")
                 .header("Accept-Encoding", "gzip, deflate, br")
                 .header("Accept-Language", "en-CA,en-GB;q=0.9,en-US;q=0.8,en;q=0.7")

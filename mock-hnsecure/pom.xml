@@ -51,10 +51,10 @@
       <artifactId>camel-bean</artifactId>
     </dependency>
 
-    <!-- validate OAuth access tokens -->
+    <!-- oAuth2 token -->
     <dependency>
       <groupId>com.nimbusds</groupId>
-      <artifactId>nimbus-jose-jwt</artifactId>
+      <artifactId>oauth2-oidc-sdk</artifactId>
       <version>8.18</version>
     </dependency>
 

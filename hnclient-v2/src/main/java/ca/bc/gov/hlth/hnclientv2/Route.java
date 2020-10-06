@@ -62,15 +62,15 @@ public class Route extends RouteBuilder {
         // TODO this might be better to just be run from main but requires a property loader and modifying the retrieveAccessToken
         renewKeys();
 
-
         from("netty:tcp://{{hostname}}:{{port}}")
                 .log("Retrieving access token")
                 .setHeader("Authorization").method(retrieveAccessToken)
+                .to("log:HttpLogger?level=DEBUG&showBody=true&showHeaders=true&multiline=true")
                 .log("Sending to HNSecure")
-                .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}")
+                .to("http://{{hnsecure-hostname}}:{{hnsecure-port}}/{{hnsecure-endpoint}}?throwExceptionOnFailure=false")
                 .log("Received response from HNSecure")
                 .convertBodyTo(String.class)
-                .log("Response message: ${body}")
+                .to("log:HttpLogger?level=DEBUG&showBody=true&showHeaders=true&multiline=true")
                 .convertBodyTo(ByteBuf.class);
     }
 

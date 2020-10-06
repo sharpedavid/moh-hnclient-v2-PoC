@@ -53,6 +53,14 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-bean</artifactId>
     </dependency>
+    <!--
+    Added camel-log to use log component e.g. to.("log:somelogger?showBody=true).
+    You don't need this dependency to use the log DSL, e.g. log("somemessage").
+    -->
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-log</artifactId>
+    </dependency>
 
     <!-- crypto algorithms -->
     <dependency>
