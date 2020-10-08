@@ -64,3 +64,49 @@ mvn compile exec:java
 ```
 
 On a Windows machine, you can run `startcamel.bat` to run the above commands.
+
+# Integrating with Kong (optional)
+
+The IAM project is evaluating using an API Gateway (Kong) between HNClient and HNSecure, which would implement the architecture shown here:
+
+![hnclientv2 with kong](https://user-images.githubusercontent.com/1767127/95481808-454b8200-0942-11eb-9b8b-e0bda43318cd.png)
+
+In production this would be the DataBC API Gateway, powered by Kong. To set-up a local Kong instance for development, I recommend [kong-vagrant](https://github.com/Kong/kong-vagrant). Additional instructions on setting-up `kong-vagrant` are in the [moh-iam-kong-plugin](https://github.com/bcgov/moh-iam-kong-plugin) repo.
+
+## Kong configuration
+
+Create a service that sends requests to HNSecure:
+
+ ```
+# 10.0.2.2 is the default IP for the Kong host machine inside VirutalBox used by kong-vagrant
+$ curl -i -X POST \
+  --url http://localhost:8001/services/ \
+  --data 'name=hnsecure' \
+  --data 'url=http://10.0.2.2:9090/hl7v2'
+
+$ curl -i -X POST \
+  --url http://localhost:8001/services/hnsecure/routes \
+  --data 'paths[]=/hl7v2'
+```
+
+Add the custom plugin from the `moh-iam-kong-plugin` repo:
+
+```
+$ curl -i -X POST \
+  --url http://localhost:8001/services/mockbin/plugins \
+  --data 'name=myplugin'
+ ```
+
+Note that the `kong-plugin-jwt-keycloak` plugin is available on `luarocks`, but the custom plugin must be built and installed manually. Find instructions on the Kong website.
+
+Install and add the Keycloak plugin:
+
+```
+luarocks install kong-plugin-jwt-keycloak
+
+curl -X POST http://localhost:8001/services/hnsecure/plugins \
+--data "name=jwt-keycloak" \
+--data "config.allowed_iss=https://common-logon-dev.hlth.gov.bc.ca/auth/realms/moh_applications"
+```
+
+You could also import the configuration file using [decK](https://docs.konghq.com/deck/guides/backup-restore/).
