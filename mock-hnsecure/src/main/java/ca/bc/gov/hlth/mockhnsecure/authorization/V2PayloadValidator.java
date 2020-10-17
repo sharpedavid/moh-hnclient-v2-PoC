@@ -1,5 +1,6 @@
 package ca.bc.gov.hlth.mockhnsecure.authorization;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,20 +23,23 @@ public class V2PayloadValidator {
      * @throws Exception message is not valid hl7v2 or is not an accepted v2 transaction type
      */
     @Handler
-    public static void validate(String v2Message) throws Exception {
+    public static void validate(Exchange exchange, String v2Message) throws Exception {
 
         int mshIndex = v2Message.indexOf("MSH|");
         if (mshIndex != 8) {
-            throw new Exception("Message doesn't start with MSH and is an invalid v2 message");
+            exchange.getIn().setHeader(Exchange.HTTP_RESPONSE_CODE, 403);
+            exchange.getIn().setBody("{ \"error\": \"Message does not start with MSH and is an invalid v2 message.\" }");
+            return;
         }
-        logger.info("Message is valid v2 beginning with MSH");
 
         String transactionType = v2Message.split("\\|")[8];
-        logger.info("v2 transaction type is " + transactionType);
-
         if (!validV2MessageTypes.stream().anyMatch(transactionType::equalsIgnoreCase)) {
-            throw new Exception("v2 Transaction type " + transactionType + " is not valid for this service");
+            exchange.getIn().setHeader(Exchange.HTTP_RESPONSE_CODE, 403);
+            exchange.getIn().setBody("{ \"error\": \"Unsupported v2 transaction type.\" }");
+            return;
         }
+
+        exchange.getIn().setHeader(Exchange.HTTP_RESPONSE_CODE, 200);
 
     }
 }

@@ -37,6 +37,7 @@ public class Route extends RouteBuilder {
             .setBody().method(new FhirPayloadExtractor())
             .log("Decoded V2: ${body}")
             .bean(V2PayloadValidator.class).id("V2PayloadValidator")
-            .setBody(simple(responseMessage));
+            .filter(simple("${header.HTTP_RESPONSE_CODE} == 200"))
+                .setBody(simple(responseMessage));
     }
 }
